@@ -14,4 +14,25 @@ Ta repozitorij vsebuje storitev **placila**, ki skrbi za simulirano plačilo nar
 
 ## Zagon in testi
 
-TBD.
+### Zahteve
+
+- JDK 25
+- Maven ni potreben, ker projekt uporablja Maven Wrapper (`mvnw`)
+
+### Gradnja in testi
+
+```shell
+./mvnw verify
+```
+
+Na Windowsu namesto `./mvnw` uporabi `.\mvnw.cmd`.
+
+Testov še ni; ukaz generira kodo iz pogodbe in jo prevede.
+
+### Zagon
+
+```shell
+./mvnw quarkus:dev
+```
+
+Storitev teče na `http://localhost:8080`. Swagger UI pa na `http://localhost:8080/q/swagger-ui`.

@@ -1,0 +1,174 @@
+openapi: 3.1.0
+info:
+  title: Plačila API
+  version: 1.0.0
+  description: Plačilo oddanih naročil.
+
+servers:
+  - url: http://localhost:8080
+
+tags:
+  - name: placila
+    description: Plačila naročil jedi iz restavracije
+
+paths:
+  /v1/placila:
+    post:
+      tags:
+        - placila
+      operationId: izvediPlacilo
+      summary: Izvedi plačilo naročila
+      parameters:
+        - name: Idempotency-Key
+          in: header
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/NovoPlacilo"
+      responses:
+        '201':  
+          description: Plačilo izvedeno
+          headers:
+            Location:
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Placilo"
+        '400':
+          $ref: "#/components/responses/NapacnaZahteva"
+        '422':
+          $ref: "#/components/responses/NeveljavenVnos"
+  /v1/placila/{placiloId}:
+    parameters:
+      - name: placiloId
+        in: path
+        required: true
+        schema:
+          type: string
+    get:
+      tags:
+        - placila
+      operationId: podrobnostiPlacila
+      summary: Pridobi plačilo po ID
+      responses:
+        '200':
+          description: Podrobnosti plačila
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Placilo"
+        '404':
+          $ref: "#/components/responses/NiNajden"
+
+components:
+  responses:
+    NapacnaZahteva:
+      description: Zahteve ni mogoče razčleniti
+      content:
+        application/problem+json:
+          schema:
+            $ref: "#/components/schemas/Problem"
+    NiNajden:
+      description: Vir ne obstaja
+      content:
+        application/problem+json:
+          schema:
+            $ref: "#/components/schemas/Problem"
+    NeveljavenVnos:
+      description: Podatki kršijo pravila
+      content:
+        application/problem+json:
+          schema:
+            $ref: "#/components/schemas/ValidacijskiProblem"
+  schemas:
+    Cena:
+      type: object
+      required: 
+        - znesek
+        - valuta
+      properties: 
+        znesek:
+          type: string
+          pattern: '^\d+\.\d{2}$'
+          example: "9.50"
+        valuta:
+          type: string
+          enum:
+            - EUR
+          example: EUR
+    Placilo:
+      type: object
+      required:
+        - id
+        - narociloId
+        - znesek
+        - status
+        - transakcijaId
+      properties:
+        id:
+          type: string
+          example: p-55
+        narociloId:
+          type: string
+          example: n-981
+        znesek:
+          $ref: "#/components/schemas/Cena"
+        status:
+          type: string
+          enum:
+            - USPESNO
+        transakcijaId:
+          type: string
+          example: tx-3f9c2e1a
+    NovoPlacilo:
+      type: object
+      required:
+        - narociloId
+        - znesek
+      properties: 
+        narociloId:
+          type: string
+          example: n-981
+        znesek:
+          $ref: "#/components/schemas/Cena"
+    Problem:
+      type: object
+      properties:
+        type:
+          type: string
+        title:
+          type: string
+          example: Vir ne obstaja
+        status:
+          type: integer
+          example: 404
+        detail:
+          type: string
+          example: Plačilo p-55 ne obstaja.
+        instance:
+          type: string
+          example: /v1/placila/p-55
+    ValidacijskiProblem:
+      allOf:
+        - $ref: "#/components/schemas/Problem"
+        - type: object
+          properties:
+            errors:
+              type: array
+              items:
+                type: object
+                properties:
+                  pointer:
+                    type: string
+                    example: "#/narociloId"
+                  detail:
+                    type: string
+                    example: je obvezen
