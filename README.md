@@ -27,7 +27,7 @@ Ta repozitorij vsebuje storitev **placila**, ki skrbi za simulirano plačilo nar
 
 Na Windowsu namesto `./mvnw` uporabi `.\mvnw.cmd`.
 
-Testov še ni; ukaz generira kodo iz pogodbe in jo prevede.
+Ukaz generira kodo iz pogodbe, jo prevede in zažene teste (RestAssured), ki preverijo vsako statusno kodo iz pogodbe.
 
 ### Zagon
 
