@@ -156,6 +156,15 @@ components:
         instance:
           type: string
           example: /v1/placila/p-55
+    NapakaVnosa:
+      type: object
+      properties:
+        pointer:
+          type: string
+          example: "#/narociloId"
+        detail:
+          type: string
+          example: je obvezen
     ValidacijskiProblem:
       allOf:
         - $ref: "#/components/schemas/Problem"
@@ -164,11 +173,5 @@ components:
             errors:
               type: array
               items:
-                type: object
-                properties:
-                  pointer:
-                    type: string
-                    example: "#/narociloId"
-                  detail:
-                    type: string
-                    example: je obvezen
+                $ref: "#/components/schemas/NapakaVnosa"
+                
