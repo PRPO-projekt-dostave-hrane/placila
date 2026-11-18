@@ -41,7 +41,9 @@ public class PlacilaVir implements PlacilaApi {
         String obstojeciId = kljuci.get(idempotencyKey);
         if (obstojeciId != null) {
             Placilo prejsnePlacilo = placila.get(obstojeciId);
-            if (prejsnePlacilo.getNarociloId().equals(novoPlacilo.getNarociloId())) {
+            boolean istaZahteva = prejsnePlacilo.getNarociloId().equals(novoPlacilo.getNarociloId()) &&
+            prejsnePlacilo.getZnesek().equals(novoPlacilo.getZnesek());
+            if (istaZahteva) {
                 URI lokacija = URI.create("/v1/placila/" + obstojeciId);
                 return Response.created(lokacija).entity(prejsnePlacilo).build();
             }
